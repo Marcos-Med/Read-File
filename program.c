@@ -35,7 +35,7 @@ int main(int argc, char ** argv){
 
 			copia_ponteiro_linha = linha;
 
-			while( (palavra = strsep(&copia_ponteiro_linha, " ")) ){
+			while( (palavra = strtok(copia_ponteiro_linha, " ")) ){
 
 				// antes de guardar a palavra em algum tipo de estrutura usada
 				// para implementar o índice, será necessário fazer uma copia
