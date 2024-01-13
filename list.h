@@ -6,7 +6,7 @@
 
 #define TAMANHO 1000
 
-typedef int boolean;
+typedef int booleano;
 
 typedef struct no{
     int line;
@@ -24,12 +24,12 @@ typedef struct element
     Lista_Lines * lines;
     struct element * prox;
     
-} WORD;
+} Word_Struct;
 
 typedef struct list
 {
-    WORD * first_no;
-    WORD * last_no;
+    Word_Struct * first_no;
+    Word_Struct * last_no;
     
 } LISTA;
 
@@ -49,7 +49,7 @@ LISTA * criar_lista(){
 }
 
 void criar_palavra(char string[], LISTA * lista, int line){
-    WORD * palavra = (WORD*) malloc(sizeof(WORD));
+    Word_Struct * palavra = (Word_Struct*) malloc(sizeof(Word_Struct));
     palavra->word = string;
     palavra->ocorrencias = 1;
     palavra->lines = (Lista_Lines*) malloc(sizeof(Lista_Lines));
@@ -71,8 +71,8 @@ void criar_palavra(char string[], LISTA * lista, int line){
 }
 
 void inserir_palavra(char string[], LISTA * lista, int line){
-   boolean flag = FALSE;
-    for(WORD * p = lista->first_no; p != NULL; p = p->prox){
+   booleano flag = FALSE;
+    for(Word_Struct * p = lista->first_no; p != NULL; p = p->prox){
         if(strcmp(p->word, string) == 0){
             p->ocorrencias++;
             for(NO * aux = p->lines->first_no;aux != NULL; aux = aux->prox){
@@ -110,8 +110,8 @@ void inserir_palavra(char string[], LISTA * lista, int line){
 
 }
 
-WORD * busca_palavra(char string[], LISTA * lista){
-    for(WORD * p = lista->first_no; p != NULL; p = p->prox){
+Word_Struct * busca_palavra(char string[], LISTA * lista){
+    for(Word_Struct * p = lista->first_no; p != NULL; p = p->prox){
         if(strcmp(string, p->word) == 0){
             return p;
         }
@@ -120,7 +120,7 @@ WORD * busca_palavra(char string[], LISTA * lista){
     return NULL;
 }
 
-void imprimir(WORD * word, FILE * in){
+void imprimir(Word_Struct * word, FILE * in){
 
     int contador_linha = 0;
     NO * aux = word->lines->first_no;

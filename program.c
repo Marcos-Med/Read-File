@@ -67,7 +67,7 @@ int main(int argc, char ** argv){
 				else{
 					tempoInicial = clock();
 					if(strcmp(arguments[0], "busca") == 0){
-						WORD * word = busca_palavra(arguments[1], lista);
+						Word_Struct * word = busca_palavra(arguments[1], lista);
 						if(word){
 							imprimir(word, in);
 						}
