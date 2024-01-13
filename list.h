@@ -1,11 +1,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
-#define TRUE 1;
-#define FALSE 0;
+
+#define TAMANHO 1000
 
 typedef int boolean;
+
+typedef struct no{
+    int line;
+    struct no * prox;
+} NO;
+
+typedef struct{
+    NO * first_no;
+} Lista_Lines;
 
 typedef struct element
 {
@@ -23,15 +33,13 @@ typedef struct list
     
 } LISTA;
 
-typedef struct no{
-    int line;
-    struct no * prox;
-} NO;
 
-typedef struct{
-    NO * first_no;
-} Lista_Lines;
 
+void string_lower(char string[]){
+    for(int i = 0; string[i] != '\0'; i++){
+        string[i] = tolower(string[i]);
+    }
+}
 
 LISTA * criar_lista(){
     LISTA * lista = (LISTA*) malloc(sizeof(LISTA));
@@ -52,7 +60,9 @@ void criar_palavra(char string[], LISTA * lista, int line){
     
     if(lista->first_no){
         lista->last_no = palavra;
-        lista->first_no->prox = lista->last_no;
+        if(lista->first_no->prox){
+            lista->first_no->prox = lista->last_no;
+        }
     }
     else{
         lista->first_no = palavra;
@@ -87,11 +97,84 @@ void inserir_palavra(char string[], LISTA * lista, int line){
                     p->lines->first_no = no_line;
                 }
             }
+
+            flag = TRUE;
+            break;
             
-        }
-        else{
-            criar_palavra(string, lista, line);
         }
     }
 
+    if(!flag){
+        criar_palavra(string, lista, line);
+    }
+
+}
+
+WORD * busca_palavra(char string[], LISTA * lista){
+    for(WORD * p = lista->first_no; p != NULL; p = p->prox){
+        if(strcmp(string, p->word) == 0){
+            return p;
+        }
+    }
+
+    return NULL;
+}
+
+void imprimir(WORD * word, FILE * in){
+
+    int contador_linha = 0;
+    NO * aux = word->lines->first_no;
+
+   if(word){
+      if(word->ocorrencias == 1){
+        printf("Existe 1 ocorrência da palavra '%s' na seguinte linha:\n", word->word);
+      }
+      else{
+        printf("Existem %d ocorrências da palavra '%s' na(s) seguinte(s) linha(s):", word->ocorrencias, word->word);
+      }
+
+      char * linha = (char*) malloc(sizeof(char) * (TAMANHO + 1));
+
+      while(in && fgets(linha, TAMANHO, in)){
+        contador_linha++;
+        if(aux){
+            if(contador_linha == aux->line){
+            printf("linha %03d: '%s'\n", contador_linha, linha);
+            aux = aux->prox;
+        }
+        }
+        else{
+            break;
+        }
+
+      }
+   } 
+
+}
+
+LISTA * construir_indexador_lista(FILE * in){
+    LISTA * lista = criar_lista();
+    char * linha = (char *) malloc((TAMANHO + 1) * sizeof(char));
+    char * palavra;
+    char * copy_linha = linha;
+    int contador_linha = 0;
+    while(in && fgets(linha, TAMANHO, in)){
+         contador_linha++;
+         while((palavra = strtok(copy_linha, " -"))){
+            string_lower(palavra);
+            inserir_palavra(palavra, lista, contador_linha);
+         }
+    }
+
+    return lista;
+}
+
+int numero_linhas_file(FILE * in){
+    char * linha = (char *) malloc((TAMANHO + 1) * sizeof(char));
+    int contador_linha = 0;
+    while(in && fgets(linha, TAMANHO, in)){
+        contador_linha++;
+    }
+
+    return contador_linha;
 }
