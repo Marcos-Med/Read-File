@@ -13,11 +13,12 @@ int main(int argc, char ** argv){
 	SetConsoleOutputCP(CP_UTF8); //Configura o cmd para aceitar acentuação
 
 	FILE * in;
-	char * linha;
-	char * copia_ponteiro_linha;
-	char * quebra_de_linha;
-	char * palavra;	
-	int contador_linha;
+	FILE * in_one;
+	//char * linha;
+	//char * copia_ponteiro_linha;
+	//char * quebra_de_linha;
+	//char * palavra;	
+	//int contador_linha;
 
 	LISTA * lista;
 	char * indice;
@@ -25,13 +26,18 @@ int main(int argc, char ** argv){
 	clock_t tempoInicial, tempoFinal;
     double tempoGasto;
 
-	if(argc == 2) {
+	int a = argc;
+	printf("%d\n", a);
+	printf("Hello World!\n");
+
+	if(argc == 3) {
 		tempoInicial = clock();
-		if(argv[2] == "lista"){
+		in = fopen(argv[1], "r");
+		if(strcmp(argv[2], "lista") == 0){
 			lista = construir_indexador_lista(in);
 			indice = "lista";
 		}
-		else if(argv[2] == "arvore"){
+		else if(strcmp(argv[2], "arvore") == 0){
 			//....
 			indice = "arvore";
 		}
@@ -39,49 +45,72 @@ int main(int argc, char ** argv){
 			return 1; //Opção Inválida!
 		}
 
-		in = fopen(argv[1], "r");
-
 		printf(">>>>> Carregando arquivo...\n");
 		printf("Tipo de indice: '%s'\n", argv[2]);
 		printf("Arquivo texto: '%s'\n", argv[1]);
-		printf("Numero de linhas no arquivo: %d", numero_linhas_file(in));
+		printf("Numero de linhas no arquivo: %d\n", numero_linhas_file(argv[1]));
 
 		tempoFinal = clock();
         tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
-        printf("Tempo para carregar o arquivo e construir o indice: %f ms.", tempoGasto);
+        printf("Tempo para carregar o arquivo e construir o indice: %f ms.\n", tempoGasto);
 		
-		char * input;
+		char input[100];
 		char **arguments = (char**) malloc(2 *sizeof(char*));
+		char * aux;
+		int i;
 		
 		
 		if(strcmp(indice, "lista") == 0){
 			do{
 				printf("> ");
-				scanf("%s", input);
-				for(int i = 0; i < 2; i++){
-					arguments[i] = strtok(input, " ");
+				fgets(input, sizeof(input), stdin);
+				i = 0;
+				aux = strtok(input, " ");
+				while(aux != NULL){
+					arguments[i] = aux;
+					aux = strtok(NULL, " ");
+					i++;
 				}
-				if(strcmp(arguments[0], "busca") != 0 || strcmp(arguments[0], "fim") != 0){
+
+				arguments[1] = strtok(arguments[1], " ");
+
+				//for(Word_Struct * word = lista->first_no; word != NULL; word = word->prox){
+					//printf("%s\n", word->word);
+				//}			
+
+				if(strcmp(arguments[0], "busca") != 0 && strcmp(arguments[0], "fim\n") != 0){
 					printf("Opção Inválida\n");
 				}
 				else{
+					int j;
+					for(j = 0; arguments[1][j] != '\0'; j++);
+					char * arg_aux = (char*) malloc((j-1) * sizeof(char));
+					for(int i = 0; i < j; i++){
+						arg_aux[i] = arguments[1][i];
+					}
+					arg_aux[j-1] = '\0';
+
+					string_lower(arg_aux);
+
+					//printf("%d\n", strcmp(arg_aux, "design"));
+					
 					tempoInicial = clock();
 					if(strcmp(arguments[0], "busca") == 0){
-						Word_Struct * word = busca_palavra(arguments[1], lista);
+						Word_Struct * word = busca_palavra(arg_aux, lista);
 						if(word){
-							imprimir(word, in);
+							imprimir(word, argv[1]);
 						}
 						else{
-							printf("Palavra '%s' não encontrada\n", arguments[1]);
+							printf("Palavra '%s' não encontrada\n", arg_aux);
 						}
 						
 					}
+					tempoFinal = clock();
+				    tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
+				    printf("Tempo de busca: %f ms.\n", tempoGasto);
 				}
 
-				tempoFinal = clock();
-				tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
-				printf("Tempo de busca: %f ms.", tempoGasto);
-			}while(strcmp(arguments[0], "fim"));
+			}while(strcmp(arguments[0], "fim\n"));
 		} 
         else {
 			//.....
