@@ -27,9 +27,7 @@ int main(int argc, char ** argv){
     double tempoGasto;
 
 	int a = argc;
-	printf("%d\n", a);
-	printf("Hello World!\n");
-
+	
 	if(argc == 3) {
 		tempoInicial = clock();
 		in = fopen(argv[1], "r");
@@ -74,10 +72,6 @@ int main(int argc, char ** argv){
 
 				arguments[1] = strtok(arguments[1], " ");
 
-				//for(Word_Struct * word = lista->first_no; word != NULL; word = word->prox){
-					//printf("%s\n", word->word);
-				//}			
-
 				if(strcmp(arguments[0], "busca") != 0 && strcmp(arguments[0], "fim\n") != 0){
 					printf("Opção Inválida\n");
 				}
@@ -91,8 +85,6 @@ int main(int argc, char ** argv){
 					arg_aux[j-1] = '\0';
 
 					string_lower(arg_aux);
-
-					//printf("%d\n", strcmp(arg_aux, "design"));
 					
 					tempoInicial = clock();
 					if(strcmp(arguments[0], "busca") == 0){

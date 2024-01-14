@@ -57,8 +57,6 @@ void criar_palavra(char string[], LISTA * lista, int line){
     palavra->lines->first_no->line = line;
     palavra->lines->first_no->prox = NULL;
     palavra->prox = NULL;
-    
-    printf("%s\n", palavra->word);
 
     if(lista->first_no){
         if(lista->first_no->prox){
@@ -170,7 +168,6 @@ LISTA * construir_indexador_lista(FILE * in){
          while(palavra != NULL){
             
             string_lower(palavra);
-            //printf("%s\n", palavra);
             inserir_palavra(palavra, lista, contador_linha);
             palavra = strtok(NULL, " -,.;:()'\"!?/");
             
