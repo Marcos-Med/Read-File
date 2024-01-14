@@ -5,22 +5,22 @@
 #include <time.h>
 
 #include "list.h"
+#include "arvore.h"
+
+#include <locale.h>
 
 #define TAMANHO 1000
 
 int main(int argc, char ** argv){
 
-	SetConsoleOutputCP(CP_UTF8); //Configura o cmd para aceitar acentuação
+	setlocale(LC_ALL,"pt_BR");
 
 	FILE * in;
 	FILE * in_one;
-	//char * linha;
-	//char * copia_ponteiro_linha;
-	//char * quebra_de_linha;
-	//char * palavra;	
-	//int contador_linha;
+	
 
 	LISTA * lista;
+	Arvore_binaria * arvore;
 	char * indice;
 
 	clock_t tempoInicial, tempoFinal;
@@ -37,9 +37,11 @@ int main(int argc, char ** argv){
 		}
 		else if(strcmp(argv[2], "arvore") == 0){
 			//....
+			arvore = construir_indexador_arvore(in);
 			indice = "arvore";
 		}
 		else{
+			printf("Invalido!\n");
 			return 1; //Opção Inválida!
 		}
 
@@ -86,8 +88,8 @@ int main(int argc, char ** argv){
 
 					string_lower(arg_aux);
 					
-					tempoInicial = clock();
 					if(strcmp(arguments[0], "busca") == 0){
+						tempoInicial = clock();
 						Word_Struct * word = busca_palavra(arg_aux, lista);
 						if(word){
 							imprimir(word, argv[1]);
@@ -95,51 +97,62 @@ int main(int argc, char ** argv){
 						else{
 							printf("Palavra '%s' não encontrada\n", arg_aux);
 						}
-						
+						tempoFinal = clock();
+				    	tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
+				   	 	printf("Tempo de busca: %f ms.\n", tempoGasto);
 					}
-					tempoFinal = clock();
-				    tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
-				    printf("Tempo de busca: %f ms.\n", tempoGasto);
+					
 				}
 
 			}while(strcmp(arguments[0], "fim\n"));
 		} 
         else {
-			//.....
+			do{
+				printf("> ");
+				fgets(input, sizeof(input), stdin);
+				i = 0;
+				aux = strtok(input, " ");
+				while(aux != NULL){
+					arguments[i] = aux;
+					aux = strtok(NULL, " ");
+					i++;
+				}
+
+				arguments[1] = strtok(arguments[1], " ");
+
+				if(strcmp(arguments[0], "busca") != 0 && strcmp(arguments[0], "fim\n") != 0){
+					printf("Opção Inválida\n");
+				}
+				else{
+					int j;
+					for(j = 0; arguments[1][j] != '\0'; j++);
+					char * arg_aux = (char*) malloc((j-1) * sizeof(char));
+					for(int i = 0; i < j; i++){
+						arg_aux[i] = arguments[1][i];
+					}
+					arg_aux[j-1] = '\0';
+
+					string_lower(arg_aux);
+
+					if(strcmp(arguments[0], "busca") == 0){
+						tempoInicial = clock();
+						NO_ARVORE * word = busca_palavra_arvore(arg_aux, arvore->raiz);
+						if(word){
+							imprimir_elemento(word, argv[1]);
+						}
+						else{
+							printf("Palavra '%s' não encontrada\n", arg_aux);
+						}
+						tempoFinal = clock();
+				    	tempoGasto = (tempoFinal - tempoInicial) * 1000.0 / CLOCKS_PER_SEC; 
+				    	printf("Tempo de busca: %f ms.\n", tempoGasto);
+					}
+					
+				} 
+			}
+			while(strcmp(arguments[0], "fim\n"));
 		}    
 
-
-		/*contador_linha = 0;
- 		linha = (char *) malloc((TAMANHO + 1) * sizeof(char));
-
-		while(in && fgets(linha, TAMANHO, in)){
-			
-			if( (quebra_de_linha = strrchr(linha, '\n')) ) *quebra_de_linha = 0;
-
-			printf("linha %03d: '%s'\n", contador_linha + 1, linha);
-
-			// fazemos uma copia do endereço que corresponde ao array de chars 
-			// usado para armazenar cada linha lida do arquivo pois a função 'strsep' 
-			// modifica o endereço do ponteiro a cada chamada feita a esta função (e 
-			// não queremos que 'linha' deixe de apontar para o inicio do array).
-
-			copia_ponteiro_linha = linha;
-
-			while( (palavra = strtok(copia_ponteiro_linha, "  -")) ){
-
-				// antes de guardar a palavra em algum tipo de estrutura usada
-				// para implementar o índice, será necessário fazer uma copia
-				// da mesma, uma vez que o ponteiro 'palavra' aponta para uma 
-				// substring dentro da string 'linha', e a cada nova linha lida
-				// o conteúdo da linha anterior é sobreescrito.
-
-				printf("\t\t'%s'\n", palavra);
-			}
-
-			contador_linha++;
-		}
-
-		printf(">>>>> Arquivo carregado!\n");*/
 
 		return 0;
 	}

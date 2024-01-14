@@ -3,6 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
+#include "functions.h"
 
 #define TAMANHO 1000
 
@@ -33,13 +34,6 @@ typedef struct list
     
 } LISTA;
 
-
-
-void string_lower(char string[]){
-    for(int i = 0; string[i] != '\0'; i++){
-        string[i] = tolower(string[i]);
-    }
-}
 
 LISTA * criar_lista(){
     LISTA * lista = (LISTA*) malloc(sizeof(LISTA));
@@ -115,6 +109,10 @@ void inserir_palavra(char string[], LISTA * lista, int line){
 }
 
 Word_Struct * busca_palavra(char string[], LISTA * lista){
+    if(strcmp(string, "") == 0){
+        return NULL;
+    }
+
     for(Word_Struct * p = lista->first_no; p != NULL; p = p->prox){
         if(strcmp(string, p->word) == 0){
             return p;
@@ -144,7 +142,7 @@ void imprimir(Word_Struct * word, char arg[]){
         contador_linha++;
         if(aux){
             if(contador_linha == aux->line){
-            printf("linha %03d: '%s'\n", contador_linha, linha);
+            printf("linha %03d: %s\n", contador_linha, linha);
             aux = aux->prox;
         }
         }
@@ -168,6 +166,7 @@ LISTA * construir_indexador_lista(FILE * in){
          while(palavra != NULL){
             
             string_lower(palavra);
+            palavra = retirar_enter(palavra);
             inserir_palavra(palavra, lista, contador_linha);
             palavra = strtok(NULL, " -,.;:()'\"!?/");
             
@@ -175,18 +174,4 @@ LISTA * construir_indexador_lista(FILE * in){
     }
 
     return lista;
-}
-
-int numero_linhas_file(char arg[]){
-    char * linha = (char *) malloc((TAMANHO + 1) * sizeof(char));
-    FILE * in;
-    int contador_linha = 0;
-   
-   in = fopen(arg, "r");
-
-    while(in && fgets(linha, TAMANHO, in)){
-        contador_linha++;
-    }
-
-    return contador_linha;
 }
